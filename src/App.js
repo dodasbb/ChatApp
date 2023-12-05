@@ -1,23 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import { React, useState, useRef } from "react";
+import "./App.css";
+import Auth from "./components/Authentication";
+import Chat from "./components/Chat";
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
 
 function App() {
+  const [isAuthenticated, setAuth] = useState(cookies.get("authentication-token"));
+  const [server, setServer] = useState(null);
+
+  const serverInputRef = useRef(null);
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Auth setAuth={setAuth} />
+      </>
+    );
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {server ? (
+        <Chat server={server}/>
+      ) : (
+        <div className="room">
+          <label>Enter Server Name</label>
+          <input ref={serverInputRef} />
+          <button onClick={() => setServer(serverInputRef.current.value)}>
+            Enter
+          </button>
+        </div>
+      )}
     </div>
   );
 }
